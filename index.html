@@ -2,9 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
   <meta name="theme-color" content="#1c3d32" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Pawhaven" />
+  <meta name="mobile-web-app-capable" content="yes" />
   <title>Pawhaven Clinic</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -27,9 +30,10 @@
       --wait: #d9a441;
       --shadow: 0 10px 28px rgba(28, 42, 36, 0.12);
       --safe: env(safe-area-inset-bottom, 12px);
+      --safe-top: env(safe-area-inset-top, 8px);
     }
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    html, body { margin: 0; height: 100%; }
+    html, body { margin: 0; height: 100%; height: 100dvh; }
     body {
       font-family: Nunito, system-ui, sans-serif;
       background:
@@ -38,11 +42,12 @@
         var(--bg);
       color: var(--ink);
       overflow: hidden;
+      touch-action: manipulation;
     }
-    button { font-family: inherit; cursor: pointer; }
-    #app { height: 100%; display: flex; flex-direction: column; max-width: 520px; margin: 0 auto; position: relative; }
+    button { font-family: inherit; cursor: pointer; min-height: 44px; }
+    #app { height: 100%; display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; position: relative; }
     header {
-      padding: 10px 14px 8px;
+      padding: calc(var(--safe-top) + 8px) 12px 8px;
       background: linear-gradient(180deg, var(--sage-d), #24483c);
       color: #f6f1e6;
       display: grid;
@@ -68,7 +73,7 @@
     .stat span { font-size: 9px; letter-spacing: .4px; text-transform: uppercase; opacity: .75; }
     .daychip { align-self: start; background: var(--gold); color: #3a2a10; font-weight: 800; font-size: 11px; border-radius: 999px; padding: 4px 8px; }
     main { flex: 1; overflow: hidden; position: relative; }
-    .screen { position: absolute; inset: 0; overflow: auto; padding: 12px 12px 96px; display: none; }
+    .screen { position: absolute; inset: 0; overflow: auto; padding: 12px 12px 108px; display: none; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
     .screen.active { display: block; }
     .room-banner {
       background: var(--cream); border: 1px solid var(--line); border-radius: 16px;
@@ -79,9 +84,9 @@
     .cards { display: grid; gap: 10px; }
     .case-card, .choice-card, .shop-card, .note {
       background: var(--card); border: 1px solid var(--line); border-radius: 18px;
-      padding: 14px; box-shadow: var(--shadow);
+      padding: 16px; box-shadow: var(--shadow);
     }
-    .case-card { cursor: pointer; transition: transform .15s ease; }
+    .case-card { cursor: pointer; transition: transform .15s ease; min-height: 88px; }
     .case-card:active { transform: scale(.985); }
     .tagrow { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
     .tag {
@@ -93,31 +98,37 @@
     .tag.well { background: #d8eedf; color: #1f5b3d; }
     .tag.ethics { background: #e4d8f4; color: #4c2d78; }
     .tag.money { background: #f3e0c4; color: #6b4314; }
+    .tag.sx { background: #cde4ef; color: #1d4f66; }
+    .steps { display: flex; gap: 6px; margin: 8px 0 0; }
+    .steps i { flex: 1; height: 6px; border-radius: 99px; background: #3d5249; }
+    .steps i.on { background: #e0b15b; }
+    .steps i.done { background: #7cb89a; }
     .pet { font-family: Fraunces, serif; font-size: 20px; margin: 0 0 2px; }
     .owner { font-size: 12px; color: var(--muted); margin: 0 0 8px; }
     .blurb { font-size: 14px; line-height: 1.45; margin: 0; }
     .meta { display: flex; justify-content: space-between; margin-top: 10px; font-size: 12px; color: var(--muted); }
-    .choice-card { width: 100%; text-align: left; }
+    .choice-card { width: 100%; text-align: left; min-height: 72px; padding: 14px 16px; }
     .choice-card h3 { margin: 0 0 6px; font-size: 15px; }
     .choice-card p { margin: 0 0 8px; color: var(--muted); font-size: 13px; line-height: 1.4; }
     .costline { font-size: 12px; font-weight: 800; color: var(--sage-d); }
     .amazon {
-      display: inline-flex; align-items: center; gap: 6px; margin-top: 8px;
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px; margin-top: 8px;
       background: #ffedd5; color: #7a3e12; border: 1px solid #f3c48a;
-      border-radius: 999px; padding: 6px 10px; font-size: 12px; font-weight: 800;
-      text-decoration: none;
+      border-radius: 999px; padding: 10px 12px; font-size: 13px; font-weight: 800;
+      text-decoration: none; min-height: 44px;
     }
     nav.rooms {
       position: absolute; left: 0; right: 0; bottom: 0;
-      padding: 8px 8px calc(var(--safe) + 8px);
-      background: rgba(255,250,242,.94);
+      padding: 6px 6px calc(var(--safe) + 8px);
+      background: rgba(255,250,242,.96);
       backdrop-filter: blur(10px);
       border-top: 1px solid var(--line);
       display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px;
     }
     nav.rooms button {
-      border: 0; background: transparent; border-radius: 12px; padding: 6px 2px;
+      border: 0; background: transparent; border-radius: 12px; padding: 8px 2px 6px;
       font-size: 10px; font-weight: 800; color: var(--muted);
+      min-height: 56px;
     }
     nav.rooms button.on { background: #e7f3ec; color: var(--sage-d); }
     nav.rooms .ico { display: block; font-size: 16px; margin-bottom: 2px; }
@@ -177,8 +188,8 @@
     .kennel.empty { color: var(--muted); display: grid; place-items: center; font-size: 12px; }
     .shop-grid { display: grid; gap: 10px; }
     .btn {
-      border: 0; border-radius: 12px; padding: 10px 12px; font-weight: 800;
-      background: var(--sage); color: white; width: 100%;
+      border: 0; border-radius: 14px; padding: 14px 12px; font-weight: 800;
+      background: var(--sage); color: white; width: 100%; font-size: 16px;
     }
     .btn.ghost { background: #efe6d4; color: var(--ink); }
     .btn.warn { background: var(--clay); }
@@ -199,18 +210,24 @@
     }
     .start {
       position: absolute; inset: 0; background: #16332a; color: #f6f1e6;
-      z-index: 40; padding: 28px 20px; overflow: auto;
-      display: flex; flex-direction: column; justify-content: center;
+      z-index: 40; padding: calc(var(--safe-top) + 24px) 20px calc(var(--safe) + 24px);
+      overflow: auto; display: flex; flex-direction: column; justify-content: center;
     }
-    .start h1 { font-family: Fraunces, serif; font-size: 34px; margin: 0 0 8px; }
+    .start h1 { font-family: Fraunces, serif; font-size: 32px; margin: 0 0 8px; }
     .start p { color: #d5e4dc; line-height: 1.5; }
     .tiny { font-size: 11px; color: #b7c9c0; margin-top: 16px; }
     .log { font-size: 13px; color: var(--muted); display: grid; gap: 6px; }
     .pulse { animation: pulse 1.6s ease-in-out infinite; }
     @keyframes pulse { 50% { opacity: .55; } }
+    @media (max-width: 380px) {
+      h1 { font-size: 16px; }
+      .stat b { font-size: 12px; }
+      .room-banner h2 { font-size: 19px; }
+      nav.rooms button { font-size: 9px; min-height: 52px; }
+    }
     @media (min-width: 600px) {
       body { padding: 12px 0; }
-      #app { height: calc(100% - 24px); border-radius: 24px; overflow: hidden; border: 1px solid var(--line); box-shadow: var(--shadow); }
+      #app { height: calc(100% - 24px); height: calc(100dvh - 24px); border-radius: 24px; overflow: hidden; border: 1px solid var(--line); box-shadow: var(--shadow); }
     }
   </style>
 </head>
@@ -254,7 +271,7 @@
       <div class="logo" style="width:56px;height:56px;font-size:28px;margin-bottom:12px;">🐾</div>
       <h1>Pawhaven Clinic</h1>
       <p>You run the only clinic in fictional Maple Hollow. Real problems walk in: blocked cats, bloat scares, owners who cannot pay, and a surgery table that never quite stays empty.</p>
-      <p>Play is card-based. Move patients between rooms. Choices spend energy, cash, and supplies. Some choices open Amazon product pages so the tools feel like real clinic gear — this is a game, not medical advice.</p>
+      <p>Built for a phone: big cards, thumb-sized room buttons, and a 3-step operating table. Add this page to your Home Screen for a full-screen clinic. Amazon links open real product searches. This is a game, not medical advice.</p>
       <button class="btn" id="startBtn">Open the clinic</button>
       <button class="btn ghost" id="continueBtn" style="margin-top:8px;display:none">Continue save</button>
       <p class="tiny">Not a substitute for real veterinary care. Amazon links are optional shopping searches. Handle euthanasia and money conversations as story choices only.</p>
@@ -442,6 +459,116 @@ const CASES = [
     blurb: "You already have a full ward. Another trauma is 20 minutes out and a wellness vaccine wants to squeeze in. Real ER clinics turn people away when staffing is unsafe.",
     tag: "ethics", tagLabel: "Triage",
     fee: 0, energy: 1, room: "exam"
+  },
+  {
+    id: "pyo",
+    pet: "Ruby",
+    species: "dog",
+    emoji: "🐕",
+    owner: "Mrs. Cho — intact golden, drinking the pond",
+    title: "Fever, puking, swollen belly",
+    blurb: "An older intact female with pus-risk written all over her. Pyometra is a clock. The operating table is the treatment.",
+    tag: "sx", tagLabel: "Surgery",
+    fee: 380, energy: 2, room: "exam"
+  },
+  {
+    id: "laceration",
+    pet: "Patch",
+    species: "dog",
+    emoji: "🐶",
+    owner: "Fence vs. cattle dog",
+    title: "Flank rip, muscle showing",
+    blurb: "A long dirty laceration from barbed wire. Flush, explore, suture in layers. This is table work, not a lobby bandage.",
+    tag: "sx", tagLabel: "Surgery",
+    fee: 240, energy: 2, room: "exam"
+  },
+  {
+    id: "ccl",
+    pet: "Moose",
+    species: "dog",
+    emoji: "🐕",
+    owner: "The gym-teacher with the sofa lab",
+    title: "Sudden hind-leg lameness",
+    blurb: "Cranial cruciate story. Drawer motion in the knee. You can brace and rest, or take him to the table for a stabilization.",
+    tag: "sx", tagLabel: "Surgery",
+    fee: 340, energy: 2, room: "exam"
+  },
+  {
+    id: "mass",
+    pet: "Ginger",
+    species: "cat",
+    emoji: "🐱",
+    owner: "Night-shift nurse from the diner",
+    title: "Growing lump on the flank",
+    blurb: "A firm mass the owner 'watched for a month.' Remove with margins on the table, or wait and wish you had not.",
+    tag: "sx", tagLabel: "Surgery",
+    fee: 220, energy: 2, room: "exam"
+  },
+  {
+    id: "stones",
+    pet: "Pebble",
+    species: "dog",
+    emoji: "🐶",
+    owner: "Dalmatian people who love cheese",
+    title: "Straining, bloody urine, stones on the film",
+    blurb: "Bladder stones you can almost hear. Cystotomy is clean, satisfying table work if you have suture and saline.",
+    tag: "sx", tagLabel: "Surgery",
+    fee: 300, energy: 2, room: "exam"
+  },
+  {
+    id: "hematoma",
+    pet: "Banjo",
+    species: "dog",
+    emoji: "🐕",
+    owner: "Weekend hunting crowd",
+    title: "Ear like a warm pillow",
+    blurb: "Aural hematoma after a week of head-shaking. You can drain in exam or tack it properly under the lamp.",
+    tag: "sx", tagLabel: "Surgery",
+    fee: 180, energy: 1, room: "exam"
+  },
+  {
+    id: "fracture",
+    pet: "Kit",
+    species: "cat",
+    emoji: "🐱",
+    owner: "Kid who saw the fall from the porch",
+    title: "Open tibia, non-weight-bearing",
+    blurb: "A young cat with a dirty open fracture. Stabilize, lavage, pin-and-wire story on the table — or send to the orthopedist two hours away.",
+    tag: "sx", tagLabel: "Surgery",
+    fee: 400, energy: 3, room: "exam"
+  },
+  {
+    id: "dentalor",
+    pet: "Chowder",
+    species: "dog",
+    emoji: "🐕",
+    owner: "Mr. Bell — 'his breath could stop a truck'",
+    title: "Rotten molars, drooling, won't chew kibble",
+    blurb: "Periodontal wreck. This is an anesthesia dental on the table: extract, suture gums, wake him kind.",
+    tag: "sx", tagLabel: "Surgery",
+    fee: 260, energy: 2, room: "exam"
+  },
+  {
+    id: "neuter",
+    pet: "Comet",
+    species: "pup",
+    emoji: "🐶",
+    owner: "Rescue drop-off with a cardboard box",
+    title: "Scheduled neuter + hidden hernia",
+    blurb: "A routine castration that is never routine. You find a small umbilical hernia once he is clipped. Fix both while you are there.",
+    tag: "sx", tagLabel: "Elective",
+    fee: 160, energy: 1, room: "exam"
+  },
+  {
+    id: "eye",
+    pet: "Moth",
+    species: "cat",
+    emoji: "🐱",
+    owner: "Quiet woman from the orchard",
+    title: "Shattered, painful eye after a cat fight",
+    blurb: "The globe will not be a seeing eye again. Enucleation is kindness if you do it well. The table, not hope, is the treatment.",
+    tag: "sx", tagLabel: "Surgery",
+    fee: 280, energy: 2, room: "exam"
   }
 ];
 
@@ -452,7 +579,7 @@ const STATE = {
   energy: 8,
   energyMax: 8,
   beds: 3,
-  stock: { gloves: 4, wrap: 3, kit: 2, suture: 1, saline: 2, collar: 1 },
+  stock: { gloves: 4, wrap: 3, kit: 2, suture: 3, saline: 2, collar: 2 },
   lobby: [],
   exam: null,
   surgery: null,
@@ -509,18 +636,20 @@ function amazonLink(href, label) {
 function hasStock(id, n=1) { return (STATE.stock[id] || 0) >= n; }
 function useStock(id, n=1) { STATE.stock[id] = Math.max(0, (STATE.stock[id]||0) - n); }
 
+function uid() { return Math.random().toString(36).slice(2, 8); }
 function pickCases() {
-  const pool = CASES.filter(c => !STATE.lobby.find(x => x.id === c.id));
-  const count = STATE.day === 1 ? 3 : (3 + (STATE.day % 2));
+  const count = STATE.day === 1 ? 4 : (3 + (STATE.day % 3));
+  const surgical = CASES.filter(c => c.tag === "sx" || ["bloat","foreign","dystocia","blocked"].includes(c.id));
+  const rest = CASES.filter(c => !surgical.includes(c));
   const chosen = [];
-  const bag = [...pool];
-  while (chosen.length < Math.min(count, bag.length)) {
-    const i = Math.floor(Math.random() * bag.length);
-    chosen.push({ ...bag.splice(i,1)[0], uid: Math.random().toString(36).slice(2,8) });
+  const sxCount = Math.min(surgical.length, STATE.day === 1 ? 2 : 1 + (Math.random() < 0.7 ? 1 : 0));
+  const bagSx = [...surgical];
+  while (chosen.length < sxCount && bagSx.length) {
+    chosen.push({ ...bagSx.splice(Math.floor(Math.random() * bagSx.length), 1)[0], uid: uid() });
   }
-  if (!chosen.find(c => c.tag === "er") && Math.random() < 0.55) {
-    const er = CASES.filter(c => c.tag === "er");
-    chosen[0] = { ...er[Math.floor(Math.random()*er.length)], uid: Math.random().toString(36).slice(2,8) };
+  const bag = [...rest];
+  while (chosen.length < Math.min(count, CASES.length) && bag.length) {
+    chosen.push({ ...bag.splice(Math.floor(Math.random() * bag.length), 1)[0], uid: uid() });
   }
   STATE.lobby = chosen;
 }
@@ -579,10 +708,12 @@ const render = {
   },
   surgery() {
     const s = STATE.surgery;
+    const stepDots = s ? `<div class="steps">${s.protocol.steps.map((_,i)=>`<i class="${i<s.step?"done":i===s.step?"on":""}"></i>`).join("")}</div>` : "";
+    const step = s ? s.protocol.steps[s.step] : null;
     $("surgery").innerHTML = `
-      <div class="room-banner"><h2>Operating table</h2><p>One table. One light. No second chances on haste.</p></div>
+      <div class="room-banner"><h2>Operating table</h2><p>Most Maple Hollow days end under this lamp. Cases now route here often.</p></div>
       <div class="or">
-        <h3>${s ? s.pet + " is on the table" : "Table idle"}</h3>
+        <h3>${s ? s.pet + " • " + s.protocol.name : "Table idle"}</h3>
         <div class="table">
           <div class="lamp"></div>
           <div class="mon">${s ? "HR  ·  SPO2" : "STANDBY"}</div>
@@ -590,9 +721,10 @@ const render = {
           <div class="steel"></div>
           ${s ? `<div class="patient ${s.species==="cat"?"cat":s.species==="pup"?"pup":""}"></div><div class="drape"></div>` : ""}
         </div>
-        <p style="font-size:12px;opacity:.8;margin:8px 0 0">${s ? s.stepText : "When a case needs surgery, send them here from exam."}</p>
+        ${stepDots}
+        <p style="font-size:12px;opacity:.8;margin:8px 0 0">${s ? ("Step " + (s.step+1) + "/" + s.protocol.steps.length + " — " + step.title + ". " + step.text) : "Bring a surgical card from exam. You will prep, operate, then close."}</p>
       </div>
-      ${s ? `<div class="cards">${s.choices.map(choiceHTML).join("")}</div>` : `<div class="note"><p>Suture packs on hand: <b>${STATE.stock.suture}</b>. Collars: <b>${STATE.stock.collar}</b>.</p>${amazonLink(AMAZON.suture,"Browse suture kits")} ${amazonLink(AMAZON.light,"Exam / surgery light")}</div>`}
+      ${s ? `<div class="cards">${stepChoices(s).map(choiceHTML).join("")}</div>` : `<div class="note"><p>Suture packs: <b>${STATE.stock.suture}</b> · saline: <b>${STATE.stock.saline}</b> · collars: <b>${STATE.stock.collar}</b></p>${amazonLink(AMAZON.suture,"Browse suture kits")} ${amazonLink(AMAZON.light,"Exam / surgery light")}</div>`}
     `;
     if (s) {
       $("surgery").querySelectorAll("[data-act]").forEach(btn => {
@@ -673,7 +805,8 @@ function choicesFor(c) {
   const commonShop = { href: AMAZON.stethoscope, label: "Stethoscope options" };
   const map = {
     blocked: [
-      { act: "block-stab", title: "Stabilize and unblock", body: "Pain control, careful bladder relief, catheter story-path. Uses saline and gloves. Best medicine.", costline: "Energy 2 · saline · gloves · fee $280", need: "saline" },
+      { act: "block-stab", title: "Stabilize and unblock", body: "Pain control, careful bladder relief, catheter story-path. Uses saline and gloves. Best medicine if this is the first block.", costline: "Energy 2 · saline · gloves · fee $280", need: "saline" },
+      { act: "block-pu", title: "Unblock, then PU surgery", body: "Repeat offender energy. Perineal urethrostomy on the table after he is stable.", costline: "To surgery · energy 1 now", amazon: { href: AMAZON.suture, label: "Suture kits" } },
       { act: "block-wait", title: "Try meds and watch", body: "Tempting if the owner hesitates. Male cats can crash. High risk.", costline: "Energy 1 · reputation gamble" },
       { act: "block-er", title: "Refer to the city ER", body: "You are a one-table clinic. Sending him on is honest if you are out of stock or energy.", costline: "Energy 1 · lose the fee · +rep if graceful" }
     ],
@@ -683,6 +816,7 @@ function choicesFor(c) {
     ],
     hbc: [
       { act: "hbc-aid", title: "Shock care + wound wrap", body: "Warmth, pressure bandage, exam. Uses wrap and kit.", costline: "Energy 2 · wrap · kit · fee $310", need: "wrap", amazon: { href: AMAZON.vetWrap, label: "Vet wrap" } },
+      { act: "hbc-sx", title: "Explore and repair on the table", body: "Once he is pinker, take the torn body wall and bleeding pad to surgery.", costline: "To surgery · energy 1 now" },
       { act: "hbc-cheap", title: "Wrap the paw and send home", body: "The pad is the obvious injury. The pelvis might not be. Cheaper. Worse medicine.", costline: "Energy 1 · wrap", need: "wrap" }
     ],
     heat: [
@@ -708,6 +842,7 @@ function choicesFor(c) {
     ],
     dental: [
       { act: "dent-feed", title: "Pain plan + syringe feeding", body: "Stabilize the gut first. Book a later dental if you can.", costline: "Energy 2 · kit · fee $150", need: "kit", amazon: { href: AMAZON.syringe, label: "Syringe feeding" } },
+      { act: "dent-sx", title: "Anesthetized dental trim", body: "Once stable enough, Thistle goes under the lamp for cheek teeth.", costline: "To surgery · energy 1 now" },
       { act: "dent-home", title: "Send hay and hope", body: "Rabbits decline quietly. This is a poor choice dressed as kindness.", costline: "Energy 1 · fee $40" }
     ],
     seizure: [
@@ -731,6 +866,46 @@ function choicesFor(c) {
       { act: "cap-triage", title: "Take the trauma, delay vaccines", body: "Triage is a skill. Wellness can wait. Explain it without shrinking.", costline: "Energy 1 · +rep" },
       { act: "cap-all", title: "Squeeze everyone in", body: "Heroics until someone gets a sloppy catheter. Energy crash.", costline: "Energy 3 · mixed results" },
       { act: "cap-divert", title: "Divert the emergency onward", body: "Unsafe staffing is a real reason to say no. Do it with directions and a phone call.", costline: "Energy 1 · -rep with one family, +ethics" }
+    ],
+    pyo: [
+      { act: "pyo-sx", title: "Emergency ovariohysterectomy", body: "Stabilize briefly, then the table. Leaving a closed pyometra overnight is a story people tell at funerals.", costline: "To surgery now", amazon: { href: AMAZON.suture, label: "Suture kits" } },
+      { act: "pyo-delay", title: "Antibiotics overnight first", body: "She looks 'not that bad.' Pyometra disagrees.", costline: "Energy 1 · dangerous" }
+    ],
+    laceration: [
+      { act: "lac-sx", title: "Clip, flush, layer closure", body: "This wound wants an operating light and real suture, not lobby vet-wrap.", costline: "To surgery", amazon: { href: AMAZON.saline, label: "Saline flush" } },
+      { act: "lac-wrap", title: "Flush in exam and wrap", body: "Faster. Higher infection and dehiscence risk.", costline: "Energy 1 · wrap · saline · fee $90", need: "wrap" }
+    ],
+    ccl: [
+      { act: "ccl-sx", title: "Stabilize the stifle on the table", body: "Not a university TPLO suite — a practical extracapsular repair story that still needs the lamp.", costline: "To surgery" },
+      { act: "ccl-rest", title: "Strict rest and a brace", body: "Honest option if cash or suture is short. Slow, imperfect, sometimes enough.", costline: "Energy 1 · fee $80" }
+    ],
+    mass: [
+      { act: "mass-sx", title: "Excise with margins", body: "Ellipse, undermine, close without tension. Pathology is a later conversation.", costline: "To surgery" },
+      { act: "mass-watch", title: "Fine-needle and wait", body: "Watching a growing lump is how 'small' becomes 'chest wall.'", costline: "Energy 1 · fee $55" }
+    ],
+    stones: [
+      { act: "stone-sx", title: "Cystotomy on the table", body: "Open bladder, scoop stones, flush urethra, close tight. Needs saline and suture.", costline: "To surgery", amazon: { href: AMAZON.saline, label: "Saline" } },
+      { act: "stone-diet", title: "Dissolution diet only", body: "Works for some stones. Not when he is already blocked and crying.", costline: "Energy 1 · fee $70" }
+    ],
+    hematoma: [
+      { act: "hem-sx", title: "Incise and tack the ear", body: "Proper hematoma repair under the light so it does not refill by Friday.", costline: "To surgery" },
+      { act: "hem-drain", title: "Needle drain in exam", body: "Five minutes. Often back next week looking like a pillow again.", costline: "Energy 1 · kit · fee $60", need: "kit" }
+    ],
+    fracture: [
+      { act: "fx-sx", title: "Lavage and pin the tibia", body: "Open fracture wants surgery today if you can keep him alive through it.", costline: "To surgery", amazon: { href: AMAZON.suture, label: "Suture / instrument kits" } },
+      { act: "fx-refer", title: "Splint and refer ortho", body: "Good medicine when your table is already full. Lose the fee, keep the cat.", costline: "Energy 1 · wrap · +rep", need: "wrap" }
+    ],
+    dentalor: [
+      { act: "dog-dent-sx", title: "Full dental under anesthesia", body: "Extract the wrecked molars, suture gingiva, wake him warm.", costline: "To surgery" },
+      { act: "dog-dent-home", title: "Antibiotics and soft food", body: "Kicks the can. The mouth keeps rotting.", costline: "Energy 1 · fee $65" }
+    ],
+    neuter: [
+      { act: "neuter-sx", title: "Neuter plus hernia repair", body: "Two problems, one anesthesia. That is good surgery math.", costline: "To surgery" },
+      { act: "neuter-only", title: "Neuter only, hernia later", body: "Shorter anesthesia. Second bill. Rescue may not return.", costline: "To surgery (simple)" }
+    ],
+    eye: [
+      { act: "eye-sx", title: "Enucleation on the table", body: "Remove the painful eye cleanly. Soft closure. Kindness with suture.", costline: "To surgery" },
+      { act: "eye-meds", title: "Pain drops and send home", body: "He will hide and stop eating. This is not a plan.", costline: "Energy 1 · fee $40 · -rep" }
     ]
   };
   return map[c.id] || [];
@@ -752,6 +927,14 @@ function finishExam(c, opts) {
     else STATE.ward.push(ward);
   }
   if (toSurgery) {
+    if (STATE.surgery) {
+      toast("The operating table is occupied. Finish that surgery first.");
+      STATE.energy += energy;
+      STATE.cash -= cash;
+      STATE.rep -= rep;
+      if (stock) stock.forEach(([id,n]) => STATE.stock[id] = (STATE.stock[id]||0) + n);
+      return;
+    }
     STATE.surgery = toSurgery;
     STATE.exam = null;
     log(msg);
@@ -771,11 +954,13 @@ function resolveChoice(c, act) {
   if (STATE.energy <= 0 && !act.startsWith("cap")) { toast("No energy."); return; }
   const R = {
     "block-stab": () => finishExam(c, { cash:280, rep:6, energy:2, stock:[["saline",1],["gloves",1]], ward:{pet:c.pet,emoji:c.emoji,note:"Unblocked, on fluids story-path",need:"overnight watch"}, msg:"Pepper pees a stream in the sink. Ms. Bristol cries in the good way." }),
+    "block-pu": () => finishExam(c, { energy:1, toSurgery: surgeryCase(c, "pu"), msg:"Pepper is stable enough. You clip for a PU." }),
     "block-wait": () => finishExam(c, { cash:40, rep:-10, energy:1, lose: Math.random()<0.62, msg: Math.random()<0.62 ? "Pepper decompensates in the carrier. Waiting was the wrong call." : "He limps through the night. You got lucky. Do not repeat this." }),
     "block-er": () => finishExam(c, { cash:0, rep:3, energy:1, msg:"You call ahead to the city ER. Honesty beats a dead cat on your table." }),
     "bloat-or": () => finishExam(c, { energy:1, toSurgery: surgeryCase(c, "gdv"), msg:"Hank is clipped and wheeled under the lamp." }),
     "bloat-delay": () => finishExam(c, { cash:0, rep:-14, energy:1, lose:true, msg:"The stomach torses further. Hank crashes in the lobby. Maple Hollow will talk." }),
     "hbc-aid": () => finishExam(c, { cash:310, rep:5, energy:2, stock:[["wrap",1],["kit",1]], ward:{pet:c.pet,emoji:c.emoji,note:"Stable, pale but improving",need:"pain watch"}, msg:"Scout's color comes back. The pad is dressed. X-rays are a conversation for morning." }),
+    "hbc-sx": () => finishExam(c, { energy:1, toSurgery: surgeryCase(c, "trauma"), msg:"Scout is draped. The body wall is not as tidy as the lobby suggested." }),
     "hbc-cheap": () => finishExam(c, { cash:80, rep:-4, energy:1, stock:[["wrap",1]], msg:"You send Scout home on three legs of hope. Jamie texts at midnight. He cannot stand." }),
     "heat-cool": () => finishExam(c, { cash:190, rep:4, energy:2, stock:[["kit",1]], ward:{pet:c.pet,emoji:c.emoji,note:"Cooling, brighter",need:"temp checks"}, msg:"Biscuit stops staggering. The tourists apologize to the dog, then to you." }),
     "heat-home": () => finishExam(c, { cash:70, rep: Math.random()<0.4?-6:1, energy:1, lose: Math.random()<0.25, msg: Math.random()<0.25 ? "They call from the highway. Biscuit seized. Discharge was too soon." : "Biscuit makes it to their hotel. You still hate cars in August." }),
@@ -789,6 +974,7 @@ function resolveChoice(c, act) {
     "ear-right": () => finishExam(c, { cash:120, rep:3, energy:1, stock:[["kit",1]], msg:"Olive's ear is a different color. Priya films your cleaning lecture." }),
     "ear-shot": () => finishExam(c, { cash:70, rep:-1, energy:1, msg:"Fast in, fast out. You already know this card will return." }),
     "dent-feed": () => finishExam(c, { cash:150, rep:5, energy:2, stock:[["kit",1]], ward:{pet:c.pet,emoji:"🐰",note:"Syringe fed, gut moving",need:"hay + warmth"}, msg:"Thistle takes a syringe of mash. Elena learns that 'off food' is a siren." }),
+    "dent-sx": () => finishExam(c, { energy:1, toSurgery: surgeryCase(c, "rabbitdent"), msg:"Thistle is under. Cheek teeth next." }),
     "dent-home": () => finishExam(c, { cash:40, rep:-7, energy:1, lose: Math.random()<0.35, msg: Math.random()<0.35 ? "Thistle is gone by morning. Gut stasis is not a mood." : "Thistle nibbles at dawn. You do not deserve that luck." }),
     "sz-obs": () => finishExam(c, { cash:180, rep:4, energy:1, stock:[["gloves",1]], msg:"The Parkers leave with a seizure log and your cell-adjacent after-hours speech." }),
     "sz-over": () => finishExam(c, { cash:40, rep:-3, energy:2, msg:"They cannot do the gold-standard panel. They feel judged. Cosmo still needs a plan." }),
@@ -805,55 +991,187 @@ function resolveChoice(c, act) {
     "sr-push": () => finishExam(c, { cash:200, rep:-6, energy:2, msg:"The estimates stack up. June looks smaller when she leaves." }),
     "cap-triage": () => finishExam(c, { cash:0, rep:5, energy:1, msg:"Vaccines rebooked. The trauma gets the table. Staff can breathe." }),
     "cap-all": () => finishExam(c, { cash:90, rep:-2, energy:3, msg:"You see everyone. Charts get sloppy. Energy is gone before supper." }),
-    "cap-divert": () => finishExam(c, { cash:0, rep:1, energy:1, msg:"You call the next town and stay on the line until they are rolling." })
+    "cap-divert": () => finishExam(c, { cash:0, rep:1, energy:1, msg:"You call the next town and stay on the line until they are rolling." }),
+    "pyo-sx": () => finishExam(c, { energy:1, toSurgery: surgeryCase(c, "pyo"), msg:"Ruby is induced. The uterus is the problem in the room." }),
+    "pyo-delay": () => finishExam(c, { cash:40, rep:-12, energy:1, lose: Math.random()<0.7, msg: Math.random()<0.7 ? "Ruby crashes overnight. Pyometra does not wait for office hours." : "She is worse at dawn. You still have a chance if you operate now." }),
+    "lac-sx": () => finishExam(c, { energy:1, toSurgery: surgeryCase(c, "laceration"), msg:"Patch is clipped. The wire track goes deeper than the fur said." }),
+    "lac-wrap": () => finishExam(c, { cash:90, rep:-1, energy:1, stock:[["wrap",1],["saline",1]], msg:"You wrap Patch in the exam room. Schedule a recheck you may not get." }),
+    "ccl-sx": () => finishExam(c, { energy:1, toSurgery: surgeryCase(c, "ccl"), msg:"Moose is clipped from hip to hock. The knee is next." }),
+    "ccl-rest": () => finishExam(c, { cash:80, rep:1, energy:1, msg:"Moose leaves with a rest plan and a human who will not keep him on the couch." }),
+    "mass-sx": () => finishExam(c, { energy:1, toSurgery: surgeryCase(c, "mass"), msg:"Ginger is draped. Draw the ellipse bigger than you want." }),
+    "mass-watch": () => finishExam(c, { cash:55, rep:-2, energy:1, msg:"You sample and wait. The nurse looks unconvinced." }),
+    "stone-sx": () => finishExam(c, { energy:1, toSurgery: surgeryCase(c, "stones"), msg:"Pebble is on his back. Bladder next." }),
+    "stone-diet": () => finishExam(c, { cash:70, rep:-1, energy:1, msg:"You send a diet. He may be back before the bag is empty." }),
+    "hem-sx": () => finishExam(c, { energy:1, toSurgery: surgeryCase(c, "hematoma"), msg:"Banjo's ear is prepped. Time to tack it flat." }),
+    "hem-drain": () => finishExam(c, { cash:60, rep:0, energy:1, stock:[["kit",1]], msg:"The pillow shrinks. You already know this ear's Friday plans." }),
+    "fx-sx": () => finishExam(c, { energy:1, toSurgery: surgeryCase(c, "fracture"), msg:"Kit is under. Dirty bone wants lavage first." }),
+    "fx-refer": () => finishExam(c, { cash:0, rep:4, energy:1, stock:[["wrap",1]], msg:"Splinted and rolling toward the orthopedist. You call ahead." }),
+    "dog-dent-sx": () => finishExam(c, { energy:1, toSurgery: surgeryCase(c, "dental"), msg:"Chowder is intubated. The mouth is a construction site." }),
+    "dog-dent-home": () => finishExam(c, { cash:65, rep:-2, energy:1, msg:"Soft food and a promise. The molars keep score." }),
+    "neuter-sx": () => finishExam(c, { energy:1, toSurgery: surgeryCase(c, "neuterhernia"), msg:"Comet is clipped. Hernia and neuter in one pass." }),
+    "neuter-only": () => finishExam(c, { energy:1, toSurgery: surgeryCase(c, "neuter"), msg:"Simple neuter. The hernia waits, maybe forever." }),
+    "eye-sx": () => finishExam(c, { energy:1, toSurgery: surgeryCase(c, "eye"), msg:"Moth is prepped. This is pain relief with a scalpel." }),
+    "eye-meds": () => finishExam(c, { cash:40, rep:-6, energy:1, msg:"Drops in a ruined eye. The orchard woman knows you punted." })
   };
   if (R[act]) R[act]();
 }
 
+const SX_PROTOCOLS = {
+  gdv: { name: "GDV / gastropexy", fee: 420, steps: [
+    { title: "Prep & decompress", text: "Clip, scrub, pass a tube. The stomach is a drum." },
+    { title: "Derotate", text: "Find the twist. Check spleen color. Do not yank." },
+    { title: "Gastropexy & close", text: "Tack stomach to body wall. Count sponges. Close in layers." }
+  ]},
+  fb: { name: "Foreign body", fee: 280, steps: [
+    { title: "Prep abdomen", text: "Clip xiphoid to pubis. Drape. Breathe." },
+    { title: "Enterotomy", text: "The sock is real. Stay on the healthy bowel." },
+    { title: "Leak-test & close", text: "Saline in the gut. Dry close. No hero speed." }
+  ]},
+  csec: { name: "Cesarean", fee: 360, steps: [
+    { title: "Linea", text: "Midline, careful of the gravid uterus." },
+    { title: "Kittens out", text: "Towels, rub, airway. Someone has to catch." },
+    { title: "Close uterus & body wall", text: "Inverting pattern, then the abdomen she still needs." }
+  ]},
+  pu: { name: "Perineal urethrostomy", fee: 320, steps: [
+    { title: "Position & clip", text: "He is still a blocked cat. Stay gentle." },
+    { title: "New opening", text: "Suture mucosa to skin. This is fiddly table work." },
+    { title: "Check stream & close", text: "A real stream now. E-collar before he wakes angry." }
+  ]},
+  trauma: { name: "Trauma explore", fee: 340, steps: [
+    { title: "Stabilize on table", text: "Color is better. The body wall is not." },
+    { title: "Repair wall & pad", text: "Muscle layer, subcut, skin. The pad wants a real stitch." },
+    { title: "Close & bandage", text: "Wrap after suture. Pain plan before the lobby sees him." }
+  ]},
+  pyo: { name: "Pyometra OHE", fee: 380, steps: [
+    { title: "Prep the bloated belly", text: "Handle like a water balloon full of bad news." },
+    { title: "Lift the uterus", text: "Don't squeeze. Don't spill. Clamp high." },
+    { title: "Close abdomen", text: "Lavage if you must. Layers. Warm recovery." }
+  ]},
+  laceration: { name: "Wound reconstruction", fee: 240, steps: [
+    { title: "Clip & lavage", text: "Wire dirt hides. Saline until the water runs honest." },
+    { title: "Explore & debride", text: "Dead tissue does not sew well. Take it." },
+    { title: "Layer closure", text: "Dead space is the enemy. Suture and a collar." }
+  ]},
+  ccl: { name: "Stifle stabilization", fee: 340, steps: [
+    { title: "Clip the limb", text: "Hip to hock. Drawer is still there." },
+    { title: "Place the suture analog", text: "Isometric points, not hope. Test the joint." },
+    { title: "Close & bandage", text: "Soft padded bandage. The couch speech comes after." }
+  ]},
+  mass: { name: "Mass excision", fee: 220, steps: [
+    { title: "Map margins", text: "Draw bigger than the owner wanted." },
+    { title: "Excise", text: "Stay deep. Don't seed the field." },
+    { title: "Close without tension", text: "Undermine if you must. Neat skin is not vanity." }
+  ]},
+  stones: { name: "Cystotomy", fee: 300, steps: [
+    { title: "Prep caudal belly", text: "Express carefully. Drape small." },
+    { title: "Open bladder, scoop", text: "Count stones. Flush the urethra both ways." },
+    { title: "Watertight close", text: "Leak-test. Then the body wall." }
+  ]},
+  hematoma: { name: "Aural hematoma repair", fee: 180, steps: [
+    { title: "Prep the pinna", text: "Clip the pillow. Scrub both sides." },
+    { title: "Incise & drain", text: "Clots out. Don't turn the ear into lace." },
+    { title: "Tack flat", text: "Through-and-through tacks. Collar before he shakes." }
+  ]},
+  fracture: { name: "Open fracture repair", fee: 400, steps: [
+    { title: "Lavage the dirt", text: "Open bone is an infection speech waiting to happen." },
+    { title: "Reduce & pin", text: "Line it up. Pin story. Don't grind cartilage." },
+    { title: "Close & splint", text: "Soft tissue cover, then a real splint." }
+  ]},
+  dental: { name: "Anesthesia dental", fee: 260, steps: [
+    { title: "Intubate & chart", text: "Every rotten molar gets a name." },
+    { title: "Extract", text: "Elevate, don't yank. Roots stay if you hurry." },
+    { title: "Suture gingiva", text: "Close the holes. Wake him slow and warm." }
+  ]},
+  rabbitdent: { name: "Rabbit dental trim", fee: 200, steps: [
+    { title: "Gentle induction", text: "Rabbits are fragile under gas. Watch the chest." },
+    { title: "Trim cheek teeth", text: "Points off the tongue and cheek. Don't pulp them." },
+    { title: "Recover upright", text: "Syringe mash ready. Gut must move today." }
+  ]},
+  neuterhernia: { name: "Neuter + hernia", fee: 200, steps: [
+    { title: "Clip both sites", text: "Umbilicus and scrotum. One anesthesia." },
+    { title: "Hernia then castration", text: "Close the hole you found. Then the elective." },
+    { title: "Two small closures", text: "Tiny incisions. Rescue will still text at 9 p.m." }
+  ]},
+  neuter: { name: "Castration", fee: 140, steps: [
+    { title: "Prep", text: "Simple is not sloppy." },
+    { title: "Tie and remove", text: "Secure ligatures. Count to calm." },
+    { title: "Close & tattoo", text: "Mark him so the next clinic knows." }
+  ]},
+  eye: { name: "Enucleation", fee: 280, steps: [
+    { title: "Prep the orbit", text: "Painful eye. Clip wide. Gentle handling." },
+    { title: "Remove the globe", text: "Stay in plane. Clamp what bleeds." },
+    { title: "Close lids", text: "A smooth line. He will sleep better tonight." }
+  ]}
+};
+
 function surgeryCase(c, type) {
-  const texts = {
-    gdv: "Decompressed. Now the twist. Hands steady.",
-    fb: "Enterotomy energy. Count sponges. Find the sock.",
-    csec: "Linea, kittens, warm towels. Then close like you mean it."
-  };
-  return {
-    pet: c.pet, species: c.species, type, from: c,
-    step: 1, stepText: texts[type],
-    choices: [
-      { act: "sx-go", title: "Proceed carefully", body: "Uses a suture pack. Good lighting, good counting, no hero speed.", costline: "Energy 2 · suture ×1 · best odds", need: "suture", amazon: { href: AMAZON.suture, label: "Suture kits" } },
-      { act: "sx-rush", title: "Rush it — lobby is stacking", body: "You can close faster. Complications like speed.", costline: "Energy 1 · suture ×1 · risky", need: "suture" },
-      { act: "sx-abort", title: "Abort and refer mid-prep", body: "Rarely pretty. Sometimes the honest move if stock or energy fails.", costline: "Energy 1 · -fee · mixed rep" }
-    ]
-  };
+  const protocol = SX_PROTOCOLS[type] || SX_PROTOCOLS.laceration;
+  return { pet: c.pet, species: c.species, type, from: c, step: 0, rushed: 0, protocol };
+}
+
+function stepChoices(s) {
+  const last = s.step >= s.protocol.steps.length - 1;
+  const mid = s.step === 1;
+  return [
+    { act: "sx-go", title: last ? "Close carefully" : (s.step === 0 ? "Prep with care" : "Operate steadily"), body: last ? "Layers, count, collar. This is how patients wake up." : "Good lighting, good hands, no lobby-speed.", costline: (mid || last ? "Energy 1 · suture" : "Energy 1") + (last ? " · fee when closed" : ""), need: (mid || last) ? "suture" : null, amazon: (mid || last) ? { href: AMAZON.suture, label: "Suture kits" } : (s.step===0 ? { href: AMAZON.gloves, label: "Gloves" } : null) },
+    { act: "sx-rush", title: last ? "Slap it closed" : "Rush this step", body: "The lobby is loud. Complications like speed.", costline: "Energy 0-1 · higher risk" },
+    { act: "sx-boost", title: "Extra lavage / extra hands", body: "Spend saline or kit for a cleaner field and better odds.", costline: "Uses saline or kit · safer", amazon: { href: AMAZON.saline, label: "Saline wash" } },
+    { act: "sx-abort", title: s.step === 0 ? "Abort and refer" : "Stop and refer mid-case", body: "Ugly phone call. Sometimes the living choice.", costline: "Energy 1 · lose the surgical fee" }
+  ];
 }
 
 function resolveSurgery(act) {
   const s = STATE.surgery;
   if (!s) return;
-  if ((act === "sx-go" || act === "sx-rush") && !hasStock("suture")) { toast("No suture pack. Restock pharmacy."); return; }
   if (act === "sx-abort") {
-    STATE.energy -= 1; STATE.rep -= 2; STATE.surgery = null;
-    log("You stopped short of incision and sent " + s.pet + " on.");
-    toast("Referred mid-prep. Humble, expensive-feeling, alive.");
+    STATE.energy -= 1; STATE.rep -= s.step === 0 ? 1 : 4; STATE.surgery = null;
+    log("You referred " + s.pet + " off the table.");
+    toast("Referred. Humble, expensive-feeling, alive.");
     hud(); showRoom("lobby"); return;
   }
-  useStock("suture", 1);
+  if (STATE.energy <= 0 && act !== "sx-rush") { toast("No energy. Rush, refer, or close the day after this."); return; }
+
+  if (act === "sx-boost") {
+    if (hasStock("saline")) useStock("saline", 1);
+    else if (hasStock("kit")) useStock("kit", 1);
+    else { toast("Need saline or a first-aid restock."); return; }
+    s.rushed = Math.max(0, (s.rushed || 0) - 1);
+    toast("Field looks cleaner.");
+    hud(); render.surgery(); return;
+  }
+
+  const last = s.step >= s.protocol.steps.length - 1;
+  const needsSuture = s.step >= 1;
+  if (act === "sx-go" && needsSuture && !hasStock("suture")) { toast("No suture pack. Restock pharmacy."); return; }
+  if (act === "sx-go" && needsSuture) useStock("suture", 1);
+
   const rush = act === "sx-rush";
-  STATE.energy -= rush ? 1 : 2;
-  const fail = rush ? Math.random() < 0.38 : Math.random() < 0.1;
-  if (fail) {
+  STATE.energy -= rush ? (STATE.energy > 0 ? 1 : 0) : 1;
+  if (rush) s.rushed = (s.rushed || 0) + 1;
+
+  const failChance = rush ? 0.16 + s.step * 0.06 : 0.04 + (s.rushed || 0) * 0.05;
+  if (Math.random() < failChance) {
     STATE.lost++; STATE.rep -= 12; STATE.surgery = null;
-    log("Surgery on " + s.pet + " went wrong.");
-    toast("The monitor flattens. You walk to the lobby the long way.");
+    log("Surgery on " + s.pet + " went wrong at step " + (s.step + 1) + ".");
+    toast("The monitor changes. You walk to the lobby the long way.");
     hud(); showRoom("office"); return;
   }
-  const fee = s.type === "gdv" ? 420 : s.type === "csec" ? 360 : 260;
-  STATE.cash += fee; STATE.rep += rush ? 2 : 7; STATE.treated++;
+
+  if (!last) {
+    s.step += 1;
+    toast("Next step under the lamp.");
+    hud(); render.surgery(); return;
+  }
+
+  const fee = s.protocol.fee;
+  STATE.cash += fee;
+  STATE.rep += rush ? 2 : 7;
+  STATE.treated++;
   if (hasStock("collar")) useStock("collar", 1);
   if (STATE.ward.length < STATE.beds) {
-    STATE.ward.push({ pet: s.pet, emoji: s.from.emoji, note: "Post-op, quiet kennel", need: "pain + collar" });
+    STATE.ward.push({ pet: s.pet, emoji: s.from.emoji, note: "Post-op · " + s.protocol.name, need: "pain + collar" });
   }
-  log("Clean surgery on " + s.pet + ". Fee $" + fee + ".");
+  log("Closed " + s.protocol.name + " on " + s.pet + ". Fee $" + fee + ".");
   toast(s.pet + " is closed and breathing.");
   STATE.surgery = null;
   hud(); showRoom("recovery");
