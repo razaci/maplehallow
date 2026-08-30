@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+  <meta name="theme-color" content="#1c3d32" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <title>Pawhaven Clinic</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f4efe4;
+      --ink: #1c2a24;
+      --muted: #5d6b64;
+      --sage: #2f6a57;
+      --sage-d: #1c3d32;
+      --leaf: #7cb89a;
+      --clay: #c46a4a;
+      --gold: #e0b15b;
+      --cream: #fffaf2;
+      --card: #fffdf8;
+      --line: #e4d9c6;
+      --danger: #b4453a;
+      --ok: #2f7a55;
+      --wait: #d9a441;
+      --shadow: 0 10px 28px rgba(28, 42, 36, 0.12);
+      --safe: env(safe-area-inset-bottom, 12px);
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      font-family: Nunito, system-ui, sans-serif;
+      background:
+        radial-gradient(1200px 600px at 10% -10%, #f7e7c8 0%, transparent 50%),
+        radial-gradient(900px 500px at 110% 0%, #d7eadf 0%, transparent 46%),
+        var(--bg);
+      color: var(--ink);
+      overflow: hidden;
+    }
+    button { font-family: inherit; cursor: pointer; }
+    #app { height: 100%; display: flex; flex-direction: column; max-width: 520px; margin: 0 auto; position: relative; }
+    header {
+      padding: 10px 14px 8px;
+      background: linear-gradient(180deg, var(--sage-d), #24483c);
+      color: #f6f1e6;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      box-shadow: 0 8px 20px rgba(20,40,32,.25);
+    }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .logo {
+      width: 38px; height: 38px; border-radius: 12px;
+      background: #f3e2b6; color: var(--sage-d);
+      display: grid; place-items: center; font-size: 20px;
+    }
+    h1 { font-family: Fraunces, serif; font-size: 18px; margin: 0; letter-spacing: .2px; }
+    .sub { font-size: 11px; opacity: .8; }
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+    .stat {
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 10px; padding: 4px 6px; text-align: center;
+    }
+    .stat b { display: block; font-size: 13px; }
+    .stat span { font-size: 9px; letter-spacing: .4px; text-transform: uppercase; opacity: .75; }
+    .daychip { align-self: start; background: var(--gold); color: #3a2a10; font-weight: 800; font-size: 11px; border-radius: 999px; padding: 4px 8px; }
+    main { flex: 1; overflow: hidden; position: relative; }
+    .screen { position: absolute; inset: 0; overflow: auto; padding: 12px 12px 96px; display: none; }
+    .screen.active { display: block; }
+    .room-banner {
+      background: var(--cream); border: 1px solid var(--line); border-radius: 16px;
+      padding: 12px 14px; margin-bottom: 12px; box-shadow: var(--shadow);
+    }
+    .room-banner h2 { font-family: Fraunces, serif; margin: 0 0 4px; font-size: 22px; }
+    .room-banner p { margin: 0; color: var(--muted); font-size: 13px; }
+    .cards { display: grid; gap: 10px; }
+    .case-card, .choice-card, .shop-card, .note {
+      background: var(--card); border: 1px solid var(--line); border-radius: 18px;
+      padding: 14px; box-shadow: var(--shadow);
+    }
+    .case-card { cursor: pointer; transition: transform .15s ease; }
+    .case-card:active { transform: scale(.985); }
+    .tagrow { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+    .tag {
+      font-size: 10px; font-weight: 800; letter-spacing: .4px; text-transform: uppercase;
+      padding: 3px 8px; border-radius: 999px;
+    }
+    .tag.er { background: #f8d4cf; color: #8a2a22; }
+    .tag.urgent { background: #f8e5b8; color: #7a5310; }
+    .tag.well { background: #d8eedf; color: #1f5b3d; }
+    .tag.ethics { background: #e4d8f4; color: #4c2d78; }
+    .tag.money { background: #f3e0c4; color: #6b4314; }
+    .pet { font-family: Fraunces, serif; font-size: 20px; margin: 0 0 2px; }
+    .owner { font-size: 12px; color: var(--muted); margin: 0 0 8px; }
+    .blurb { font-size: 14px; line-height: 1.45; margin: 0; }
+    .meta { display: flex; justify-content: space-between; margin-top: 10px; font-size: 12px; color: var(--muted); }
+    .choice-card { width: 100%; text-align: left; }
+    .choice-card h3 { margin: 0 0 6px; font-size: 15px; }
+    .choice-card p { margin: 0 0 8px; color: var(--muted); font-size: 13px; line-height: 1.4; }
+    .costline { font-size: 12px; font-weight: 800; color: var(--sage-d); }
+    .amazon {
+      display: inline-flex; align-items: center; gap: 6px; margin-top: 8px;
+      background: #ffedd5; color: #7a3e12; border: 1px solid #f3c48a;
+      border-radius: 999px; padding: 6px 10px; font-size: 12px; font-weight: 800;
+      text-decoration: none;
+    }
+    nav.rooms {
+      position: absolute; left: 0; right: 0; bottom: 0;
+      padding: 8px 8px calc(var(--safe) + 8px);
+      background: rgba(255,250,242,.94);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid var(--line);
+      display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px;
+    }
+    nav.rooms button {
+      border: 0; background: transparent; border-radius: 12px; padding: 6px 2px;
+      font-size: 10px; font-weight: 800; color: var(--muted);
+    }
+    nav.rooms button.on { background: #e7f3ec; color: var(--sage-d); }
+    nav.rooms .ico { display: block; font-size: 16px; margin-bottom: 2px; }
+    .or {
+      background: linear-gradient(180deg, #24312c, #151c19);
+      color: #e8efe9; border-radius: 18px; padding: 14px; margin-bottom: 12px;
+      box-shadow: var(--shadow); position: relative; overflow: hidden;
+    }
+    .or h3 { margin: 0 0 8px; font-family: Fraunces, serif; }
+    .table {
+      height: 170px; border-radius: 14px; position: relative;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255,255,220,.18), transparent 40%),
+        linear-gradient(180deg, #2a3b35, #1a2420);
+      border: 1px solid #3d5249; overflow: hidden;
+    }
+    .lamp {
+      position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+      width: 90px; height: 34px; border-radius: 0 0 40px 40px;
+      background: radial-gradient(circle at 50% 20%, #fff7c2, #d9b34a 60%, #7a5a16);
+      box-shadow: 0 30px 50px rgba(255, 230, 140, .28);
+    }
+    .steel {
+      position: absolute; left: 10%; right: 10%; top: 58px; height: 78px;
+      background: linear-gradient(180deg, #c9d4d0, #8ea09a 40%, #6d807a);
+      border-radius: 10px 10px 6px 6px;
+      box-shadow: inset 0 8px 10px rgba(255,255,255,.35), 0 10px 16px rgba(0,0,0,.35);
+    }
+    .patient {
+      position: absolute; left: 22%; right: 22%; top: 66px; height: 42px;
+      background: #d8b48a; border-radius: 40px;
+      box-shadow: 0 4px 0 #b48a5c;
+    }
+    .patient.cat { background: #c9c3bf; box-shadow: 0 4px 0 #8d8680; }
+    .patient.pup { background: #c9a06a; }
+    .drape {
+      position: absolute; left: 30%; right: 30%; top: 78px; height: 18px;
+      background: #dfe9e4; border-radius: 4px;
+    }
+    .tray {
+      position: absolute; right: 8px; top: 18px; width: 46px; height: 56px;
+      background: #9aa8a2; border-radius: 6px; border: 1px solid #c5d0cb;
+    }
+    .mon {
+      position: absolute; left: 8px; top: 16px; width: 42px; height: 28px;
+      background: #0e1613; border: 1px solid #3d5; border-radius: 4px;
+      font-size: 9px; color: #7dff9a; display: grid; place-items: center;
+    }
+    .queue { display: grid; gap: 8px; }
+    .ward {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+    }
+    .kennel {
+      background: #efe6d4; border: 1px solid var(--line); border-radius: 14px; padding: 10px;
+      min-height: 92px;
+    }
+    .kennel.empty { color: var(--muted); display: grid; place-items: center; font-size: 12px; }
+    .shop-grid { display: grid; gap: 10px; }
+    .btn {
+      border: 0; border-radius: 12px; padding: 10px 12px; font-weight: 800;
+      background: var(--sage); color: white; width: 100%;
+    }
+    .btn.ghost { background: #efe6d4; color: var(--ink); }
+    .btn.warn { background: var(--clay); }
+    .modal-back {
+      position: absolute; inset: 0; background: rgba(20,28,24,.55);
+      display: none; align-items: flex-end; z-index: 20;
+    }
+    .modal-back.show { display: flex; }
+    .modal {
+      background: var(--cream); width: 100%; border-radius: 20px 20px 0 0;
+      padding: 16px 16px calc(var(--safe) + 16px); max-height: 86%; overflow: auto;
+    }
+    .modal h3 { font-family: Fraunces, serif; margin: 0 0 8px; }
+    .toast {
+      position: absolute; left: 12px; right: 12px; top: 78px; z-index: 30;
+      background: #1c3d32; color: #fff; border-radius: 12px; padding: 10px 12px;
+      display: none; font-size: 13px;
+    }
+    .start {
+      position: absolute; inset: 0; background: #16332a; color: #f6f1e6;
+      z-index: 40; padding: 28px 20px; overflow: auto;
+      display: flex; flex-direction: column; justify-content: center;
+    }
+    .start h1 { font-family: Fraunces, serif; font-size: 34px; margin: 0 0 8px; }
+    .start p { color: #d5e4dc; line-height: 1.5; }
+    .tiny { font-size: 11px; color: #b7c9c0; margin-top: 16px; }
+    .log { font-size: 13px; color: var(--muted); display: grid; gap: 6px; }
+    .pulse { animation: pulse 1.6s ease-in-out infinite; }
+    @keyframes pulse { 50% { opacity: .55; } }
+    @media (min-width: 600px) {
+      body { padding: 12px 0; }
+      #app { height: calc(100% - 24px); border-radius: 24px; overflow: hidden; border: 1px solid var(--line); box-shadow: var(--shadow); }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <header>
+      <div class="brand">
+        <div class="logo">🐾</div>
+        <div>
+          <h1>Pawhaven Clinic</h1>
+          <div class="sub">Maple Hollow • you are the vet</div>
+        </div>
+      </div>
+      <div class="daychip" id="dayChip">Day 1</div>
+      <div class="stats">
+        <div class="stat"><b id="cash">$420</b><span>Cash</span></div>
+        <div class="stat"><b id="rep">62</b><span>Rep</span></div>
+        <div class="stat"><b id="energy">8</b><span>Energy</span></div>
+        <div class="stat"><b id="beds">0/3</b><span>Wards</span></div>
+      </div>
+    </header>
+    <main>
+      <div id="lobby" class="screen active"></div>
+      <div id="exam" class="screen"></div>
+      <div id="surgery" class="screen"></div>
+      <div id="pharmacy" class="screen"></div>
+      <div id="recovery" class="screen"></div>
+      <div id="office" class="screen"></div>
+      <div class="toast" id="toast"></div>
+      <div class="modal-back" id="modalBack"><div class="modal" id="modal"></div></div>
+    </main>
+    <nav class="rooms">
+      <button class="on" data-room="lobby"><span class="ico">🚪</span>Lobby</button>
+      <button data-room="exam"><span class="ico">🩺</span>Exam</button>
+      <button data-room="surgery"><span class="ico">🏥</span>Surgery</button>
+      <button data-room="pharmacy"><span class="ico">💊</span>Rx</button>
+      <button data-room="recovery"><span class="ico">🛏️</span>Ward</button>
+      <button data-room="office"><span class="ico">📁</span>Office</button>
+    </nav>
+    <div class="start" id="start">
+      <div class="logo" style="width:56px;height:56px;font-size:28px;margin-bottom:12px;">🐾</div>
+      <h1>Pawhaven Clinic</h1>
+      <p>You run the only clinic in fictional Maple Hollow. Real problems walk in: blocked cats, bloat scares, owners who cannot pay, and a surgery table that never quite stays empty.</p>
+      <p>Play is card-based. Move patients between rooms. Choices spend energy, cash, and supplies. Some choices open Amazon product pages so the tools feel like real clinic gear — this is a game, not medical advice.</p>
+      <button class="btn" id="startBtn">Open the clinic</button>
+      <button class="btn ghost" id="continueBtn" style="margin-top:8px;display:none">Continue save</button>
+      <p class="tiny">Not a substitute for real veterinary care. Amazon links are optional shopping searches. Handle euthanasia and money conversations as story choices only.</p>
+    </div>
+  </div>
+
+<script>
+const AMAZON = {
+  firstAid: "https://www.amazon.com/s?k=pet+first+aid+kit",
+  vetWrap: "https://www.amazon.com/s?k=vet+wrap+self+adhesive+bandage",
+  stethoscope: "https://www.amazon.com/s?k=veterinary+stethoscope",
+  suture: "https://www.amazon.com/s?k=veterinary+suture+kit",
+  thermo: "https://www.amazon.com/s?k=pet+digital+thermometer",
+  gloves: "https://www.amazon.com/s?k=nitrile+exam+gloves",
+  ecollar: "https://www.amazon.com/s?k=dog+elizabethan+collar",
+  otoscope: "https://www.amazon.com/s?k=veterinary+otoscope",
+  heat: "https://www.amazon.com/s?k=pet+heating+pad",
+  syringe: "https://www.amazon.com/s?k=oral+pet+syringe+feeding",
+  saline: "https://www.amazon.com/s?k=sterile+saline+wound+wash",
+  cone: "https://www.amazon.com/s?k=soft+recovery+collar+dog",
+  scale: "https://www.amazon.com/s?k=pet+clinic+scale",
+  light: "https://www.amazon.com/s?k=veterinary+exam+light"
+};
+
+const SHOP = [
+  { id: "gloves", name: "Nitrile exam gloves", stock: "gloves", cost: 18, qty: 6, link: AMAZON.gloves, blurb: "Every exam starts with clean hands." },
+  { id: "wrap", name: "Vet wrap + gauze", stock: "wrap", cost: 22, qty: 5, link: AMAZON.vetWrap, blurb: "Pressure wraps for torn nails and wounds." },
+  { id: "kit", name: "Pet first-aid restock", stock: "kit", cost: 35, qty: 4, link: AMAZON.firstAid, blurb: "Wipes, pads, thermometer, forceps." },
+  { id: "suture", name: "Suture pack", stock: "suture", cost: 28, qty: 3, link: AMAZON.suture, blurb: "Needed before you open the operating table." },
+  { id: "saline", name: "Saline & flush", stock: "saline", cost: 16, qty: 4, link: AMAZON.saline, blurb: "Wounds, eyes, and blocked-cat prep." },
+  { id: "collar", name: "E-collars", stock: "collar", cost: 20, qty: 3, link: AMAZON.ecollar, blurb: "Stops licking after surgery." }
+];
+
+const CASES = [
+  {
+    id: "blocked",
+    pet: "Pepper",
+    species: "cat",
+    emoji: "🐱",
+    owner: "Ms. Bristol — found him collapsed by the litter box",
+    title: "Male cat, straining, no urine",
+    blurb: "A ginger tom who has been in and out of the box all night. He is painful, vocal, and his bladder feels like a stone. Classic urethral obstruction — hours matter.",
+    tag: "er", tagLabel: "Emergency",
+    fee: 280, energy: 2, room: "exam"
+  },
+  {
+    id: "bloat",
+    pet: "Hank",
+    species: "dog",
+    emoji: "🐕",
+    owner: "The Millers — Great Dane after a big breakfast",
+    title: "Restless, trying to vomit, tight belly",
+    blurb: "A deep-chested dog pacing and retching without bringing anything up. The abdomen looks sprung. This could be GDV. Stabilize first. Surgery may follow.",
+    tag: "er", tagLabel: "Emergency",
+    fee: 420, energy: 3, room: "exam"
+  },
+  {
+    id: "hbc",
+    pet: "Scout",
+    species: "dog",
+    emoji: "🐶",
+    owner: "Jamie — hit-by-car on Maple Street",
+    title: "Trauma, pale gums, bleeding paw",
+    blurb: "A mixed-breed carried in on a towel. Shocky, a torn pad, possible pelvic pain. First aid, fluids thinking, and a hard conversation about diagnostics.",
+    tag: "er", tagLabel: "Emergency",
+    fee: 310, energy: 2, room: "exam"
+  },
+  {
+    id: "heat",
+    pet: "Biscuit",
+    species: "dog",
+    emoji: "🐕",
+    owner: "Tourists passing through town",
+    title: "Left in a warm car, staggering",
+    blurb: "Bright red gums, heavy panting, wobbly. Heatstroke. Cool strategically, monitor, and decide whether the ward can take an overnight.",
+    tag: "er", tagLabel: "Emergency",
+    fee: 190, energy: 2, room: "exam"
+  },
+  {
+    id: "foreign",
+    pet: "Noodle",
+    species: "dog",
+    emoji: "🐶",
+    owner: "Theo — swears the sock 'just vanished'",
+    title: "Vomiting, no appetite, sock suspect",
+    blurb: "A young terrier who may have swallowed a sock. Belly is uncomfortable. Do you watch, radiograph in-story, or go to the table?",
+    tag: "urgent", tagLabel: "Urgent",
+    fee: 260, energy: 2, room: "exam"
+  },
+  {
+    id: "parvo",
+    pet: "Pip",
+    species: "pup",
+    emoji: "🐕",
+    owner: "A teenager with a new rescue pup",
+    title: "Bloody diarrhea, listless puppy",
+    blurb: "Unvaccinated, six months-ish, foul diarrhea and vomiting. Isolation, fluids, honesty about cost and contagion. The lobby will notice how you handle this.",
+    tag: "er", tagLabel: "Isolation",
+    fee: 240, energy: 2, room: "exam"
+  },
+  {
+    id: "cannotpay",
+    pet: "Mabel",
+    species: "dog",
+    emoji: "🐶",
+    owner: "Mr. Ortiz — pension, no extras",
+    title: "Torn dewclaw, owner short on cash",
+    blurb: "Bleeding nail, simple fix, complicated wallet. Real clinics live in this gray zone every week. Care, payment plans, or a lesser patch job.",
+    tag: "money", tagLabel: "Money",
+    fee: 90, energy: 1, room: "exam"
+  },
+  {
+    id: "ear",
+    pet: "Olive",
+    species: "dog",
+    emoji: "🐕",
+    owner: "Priya — 'she keeps shaking her head'",
+    title: "Smelly ear, head tilt",
+    blurb: "A spaniel with a hot, yeasty ear. Not glamorous. Good medicine is still a scope, clean, meds, and an owner who will actually finish the course.",
+    tag: "well", tagLabel: "Outpatient",
+    fee: 120, energy: 1, room: "exam"
+  },
+  {
+    id: "dental",
+    pet: "Thistle",
+    species: "rabbit",
+    emoji: "🐰",
+    owner: "Elena — rabbit not eating hay",
+    title: "Small-mammal dental pain",
+    blurb: "A rabbit off food is an emergency in slow motion. Cheek teeth, gut stasis risk, syringe feeding, and whether you have the right kit.",
+    tag: "urgent", tagLabel: "Exotics",
+    fee: 150, energy: 2, room: "exam"
+  },
+  {
+    id: "seizure",
+    pet: "Cosmo",
+    species: "dog",
+    emoji: "🐕",
+    owner: "The Parkers — first seizure at breakfast",
+    title: "Post-ictal, scared family",
+    blurb: "A three-minute seizure at home. Now he is wobbly and the owners are shaking more than he is. Rule-outs, observation, and calm communication.",
+    tag: "urgent", tagLabel: "Neuro",
+    fee: 180, energy: 1, room: "exam"
+  },
+  {
+    id: "antibiotics",
+    pet: "Jazz",
+    species: "cat",
+    emoji: "🐱",
+    owner: "Avery — demands 'the good antibiotics'",
+    title: "Sneezing cat, pushy prescription request",
+    blurb: "A mild upper-respiratory cat. The owner wants a shot of everything 'just in case.' Stewardship vs. a one-star review in a small town.",
+    tag: "ethics", tagLabel: "Ethics",
+    fee: 85, energy: 1, room: "exam"
+  },
+  {
+    id: "dystocia",
+    pet: "Luna",
+    species: "cat",
+    emoji: "🐱",
+    owner: "Neighborhood barn caretaker",
+    title: "Queen in labor, stuck kitten",
+    blurb: "A barn cat straining for hours with one kitten visible. Medical management or surgery. The operating table is already on your mind.",
+    tag: "er", tagLabel: "Emergency",
+    fee: 360, energy: 3, room: "exam"
+  },
+  {
+    id: "senior",
+    pet: "Walter",
+    species: "dog",
+    emoji: "🐕",
+    owner: "June — 14-year-old lab, not eating",
+    title: "Quality-of-life visit",
+    blurb: "A beloved senior who is fading. This is not a puzzle to 'win.' It is listening, comfort care, and an honest conversation about what a good day still looks like.",
+    tag: "ethics", tagLabel: "End-of-life",
+    fee: 70, energy: 1, room: "exam"
+  },
+  {
+    id: "capacity",
+    pet: "Two walk-ins",
+    species: "dog",
+    emoji: "🏥",
+    owner: "The phone will not stop",
+    title: "Clinic at capacity",
+    blurb: "You already have a full ward. Another trauma is 20 minutes out and a wellness vaccine wants to squeeze in. Real ER clinics turn people away when staffing is unsafe.",
+    tag: "ethics", tagLabel: "Triage",
+    fee: 0, energy: 1, room: "exam"
+  }
+];
+
+const STATE = {
+  day: 1,
+  cash: 420,
+  rep: 62,
+  energy: 8,
+  energyMax: 8,
+  beds: 3,
+  stock: { gloves: 4, wrap: 3, kit: 2, suture: 1, saline: 2, collar: 1 },
+  lobby: [],
+  exam: null,
+  surgery: null,
+  ward: [],
+  log: ["You inherited Pawhaven from Dr. Ellis. The paint is peeling. The town still comes."],
+  treated: 0,
+  lost: 0,
+  seen: []
+};
+
+function save() {
+  localStorage.setItem("pawhaven", JSON.stringify({
+    day: STATE.day, cash: STATE.cash, rep: STATE.rep, energy: STATE.energy,
+    energyMax: STATE.energyMax, stock: STATE.stock, log: STATE.log.slice(-12),
+    treated: STATE.treated, lost: STATE.lost, seen: STATE.seen
+  }));
+}
+function load() {
+  const raw = localStorage.getItem("pawhaven");
+  if (!raw) return false;
+  try {
+    const d = JSON.parse(raw);
+    Object.assign(STATE, d);
+    STATE.lobby = []; STATE.exam = null; STATE.surgery = null; STATE.ward = [];
+    return true;
+  } catch { return false; }
+}
+
+const $ = (id) => document.getElementById(id);
+function toast(msg) {
+  const t = $("toast");
+  t.textContent = msg;
+  t.style.display = "block";
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => t.style.display = "none", 2200);
+}
+function clamp() {
+  STATE.cash = Math.max(0, Math.round(STATE.cash));
+  STATE.rep = Math.max(0, Math.min(100, STATE.rep));
+  STATE.energy = Math.max(0, STATE.energy);
+}
+function hud() {
+  clamp();
+  $("cash").textContent = "$" + STATE.cash;
+  $("rep").textContent = STATE.rep;
+  $("energy").textContent = STATE.energy + "/" + STATE.energyMax;
+  $("beds").textContent = STATE.ward.length + "/" + STATE.beds;
+  $("dayChip").textContent = "Day " + STATE.day;
+  save();
+}
+function amazonLink(href, label) {
+  return `<a class="amazon" href="${href}" target="_blank" rel="noopener">🛒 ${label}</a>`;
+}
+function hasStock(id, n=1) { return (STATE.stock[id] || 0) >= n; }
+function useStock(id, n=1) { STATE.stock[id] = Math.max(0, (STATE.stock[id]||0) - n); }
+
+function pickCases() {
+  const pool = CASES.filter(c => !STATE.lobby.find(x => x.id === c.id));
+  const count = STATE.day === 1 ? 3 : (3 + (STATE.day % 2));
+  const chosen = [];
+  const bag = [...pool];
+  while (chosen.length < Math.min(count, bag.length)) {
+    const i = Math.floor(Math.random() * bag.length);
+    chosen.push({ ...bag.splice(i,1)[0], uid: Math.random().toString(36).slice(2,8) });
+  }
+  if (!chosen.find(c => c.tag === "er") && Math.random() < 0.55) {
+    const er = CASES.filter(c => c.tag === "er");
+    chosen[0] = { ...er[Math.floor(Math.random()*er.length)], uid: Math.random().toString(36).slice(2,8) };
+  }
+  STATE.lobby = chosen;
+}
+
+function showRoom(name) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.querySelectorAll("nav.rooms button").forEach(b => b.classList.toggle("on", b.dataset.room === name));
+  $(name).classList.add("active");
+  render[name]();
+}
+
+const render = {
+  lobby() {
+    $("lobby").innerHTML = `
+      <div class="room-banner">
+        <h2>Lobby</h2>
+        <p>Maple Hollow brings its worries to the plastic chairs. Tap a case card to take it into exam.</p>
+      </div>
+      <div class="cards" id="lobbyCards"></div>
+      ${STATE.energy <= 0 ? `<div class="note"><p>You are out of energy. Close the day from the Office.</p><button class="btn" onclick="showRoom('office')">Go to office</button></div>` : ""}
+    `;
+    const wrap = $("lobby").querySelector("#lobbyCards");
+    if (!STATE.lobby.length) {
+      wrap.innerHTML = `<div class="note"><p>The chairs are empty. Check the ward, restock pharmacy, or end the day in the office.</p></div>`;
+      return;
+    }
+    wrap.innerHTML = STATE.lobby.map(c => cardHTML(c)).join("");
+    wrap.querySelectorAll(".case-card").forEach(el => {
+      el.onclick = () => takeToExam(el.dataset.uid);
+    });
+  },
+  exam() {
+    const c = STATE.exam;
+    if (!c) {
+      $("exam").innerHTML = `
+        <div class="room-banner"><h2>Exam Room</h2><p>Stainless table, jar of treats, a lamp that flickers if you bump it.</p></div>
+        <div class="note"><p>No patient on the table. Bring someone from the lobby.</p></div>`;
+      return;
+    }
+    $("exam").innerHTML = `
+      <div class="room-banner">
+        <h2>Exam • ${c.pet} ${c.emoji}</h2>
+        <p>${c.owner}</p>
+      </div>
+      <div class="case-card" style="cursor:default">
+        <div class="tagrow"><span class="tag ${c.tag}">${c.tagLabel}</span></div>
+        <p class="pet">${c.title}</p>
+        <p class="blurb">${c.blurb}</p>
+        <div class="meta"><span>Stock: gloves ${STATE.stock.gloves} · wrap ${STATE.stock.wrap} · kit ${STATE.stock.kit} · saline ${STATE.stock.saline}</span></div>
+      </div>
+      <div class="cards" style="margin-top:10px">${choicesFor(c).map(choiceHTML).join("")}</div>
+    `;
+    $("exam").querySelectorAll("[data-act]").forEach(btn => {
+      btn.onclick = () => resolveChoice(c, btn.dataset.act);
+    });
+  },
+  surgery() {
+    const s = STATE.surgery;
+    $("surgery").innerHTML = `
+      <div class="room-banner"><h2>Operating table</h2><p>One table. One light. No second chances on haste.</p></div>
+      <div class="or">
+        <h3>${s ? s.pet + " is on the table" : "Table idle"}</h3>
+        <div class="table">
+          <div class="lamp"></div>
+          <div class="mon">${s ? "HR  ·  SPO2" : "STANDBY"}</div>
+          <div class="tray"></div>
+          <div class="steel"></div>
+          ${s ? `<div class="patient ${s.species==="cat"?"cat":s.species==="pup"?"pup":""}"></div><div class="drape"></div>` : ""}
+        </div>
+        <p style="font-size:12px;opacity:.8;margin:8px 0 0">${s ? s.stepText : "When a case needs surgery, send them here from exam."}</p>
+      </div>
+      ${s ? `<div class="cards">${s.choices.map(choiceHTML).join("")}</div>` : `<div class="note"><p>Suture packs on hand: <b>${STATE.stock.suture}</b>. Collars: <b>${STATE.stock.collar}</b>.</p>${amazonLink(AMAZON.suture,"Browse suture kits")} ${amazonLink(AMAZON.light,"Exam / surgery light")}</div>`}
+    `;
+    if (s) {
+      $("surgery").querySelectorAll("[data-act]").forEach(btn => {
+        btn.onclick = () => resolveSurgery(btn.dataset.act);
+      });
+    }
+  },
+  pharmacy() {
+    $("pharmacy").innerHTML = `
+      <div class="room-banner"><h2>Pharmacy & supply closet</h2><p>Order like a real clinic. Links open Amazon searches in a new tab. Buying in-game spends clinic cash and restocks shelves.</p></div>
+      <div class="shop-grid">${SHOP.map(item => `
+        <div class="shop-card">
+          <h3 style="margin:0 0 4px">${item.name}</h3>
+          <p style="margin:0 0 6px;color:var(--muted);font-size:13px">${item.blurb}</p>
+          <div class="costline">On shelf: ${STATE.stock[item.stock]||0} · Restock $${item.cost} for +${item.qty}</div>
+          ${amazonLink(item.link, "Look at real products")}
+          <button class="btn" style="margin-top:8px" onclick="buy('${item.id}')">Buy for clinic</button>
+        </div>`).join("")}
+      </div>`;
+  },
+  recovery() {
+    $("recovery").innerHTML = `
+      <div class="room-banner"><h2>Recovery ward</h2><p>${STATE.beds} kennels. Watch them overnight when you close the day.</p></div>
+      <div class="ward">${Array.from({length: STATE.beds}, (_,i) => {
+        const p = STATE.ward[i];
+        if (!p) return `<div class="kennel empty">Empty kennel</div>`;
+        return `<div class="kennel"><b>${p.emoji} ${p.pet}</b><div style="font-size:12px;color:var(--muted)">${p.note}</div><div style="font-size:11px;margin-top:6px">Needs: ${p.need}</div></div>`;
+      }).join("")}</div>
+      <div class="note" style="margin-top:10px">
+        <p>Warmth and quiet matter after anesthesia or heatstroke.</p>
+        ${amazonLink(AMAZON.heat,"Pet heating pad")} ${amazonLink(AMAZON.cone,"Soft recovery collar")}
+      </div>`;
+  },
+  office() {
+    $("office").innerHTML = `
+      <div class="room-banner"><h2>Office</h2><p>Chart pile, coffee ring, and the numbers that keep the lights on.</p></div>
+      <div class="note">
+        <p><b>Day ${STATE.day}</b> · Treated ${STATE.treated} · Lost ${STATE.lost}</p>
+        <p>Reputation ${STATE.rep}/100. Below 25 and Maple Hollow starts driving to the next town.</p>
+      </div>
+      <div class="log">${STATE.log.slice(-8).map(l => `<div>• ${l}</div>`).join("")}</div>
+      <button class="btn" style="margin-top:12px" onclick="endDay()">Close clinic for the night</button>
+      <button class="btn ghost" style="margin-top:8px" onclick="resetGame()">New career</button>
+      <p class="tiny" style="color:var(--muted)">Game only. If a real pet is in trouble, call a real veterinarian.</p>
+    `;
+  }
+};
+
+function cardHTML(c) {
+  return `<div class="case-card" data-uid="${c.uid}">
+    <div class="tagrow"><span class="tag ${c.tag}">${c.tagLabel}</span><span class="tag well">${c.emoji} ${c.species}</span></div>
+    <p class="pet">${c.pet}</p>
+    <p class="owner">${c.owner}</p>
+    <p class="blurb">${c.title}</p>
+    <div class="meta"><span>Est. fee $${c.fee || "—"}</span><span>Energy ${c.energy}</span></div>
+  </div>`;
+}
+function choiceHTML(ch) {
+  const locked = ch.need && !hasStock(ch.need);
+  return `<button class="choice-card" data-act="${ch.act}" ${locked?"disabled style='opacity:.55'":""}>
+    <h3>${ch.title}</h3>
+    <p>${ch.body}</p>
+    <div class="costline">${ch.costline || ""}${locked ? " · Need " + ch.need + " in pharmacy" : ""}</div>
+    ${ch.amazon ? amazonLink(ch.amazon.href, ch.amazon.label) : ""}
+  </button>`;
+}
+
+function takeToExam(uid) {
+  if (STATE.exam) { toast("Finish the patient already in exam."); showRoom("exam"); return; }
+  if (STATE.energy <= 0) { toast("No energy left. Close the day."); return; }
+  const i = STATE.lobby.findIndex(c => c.uid === uid);
+  if (i < 0) return;
+  STATE.exam = STATE.lobby.splice(i,1)[0];
+  showRoom("exam");
+}
+
+function choicesFor(c) {
+  const commonShop = { href: AMAZON.stethoscope, label: "Stethoscope options" };
+  const map = {
+    blocked: [
+      { act: "block-stab", title: "Stabilize and unblock", body: "Pain control, careful bladder relief, catheter story-path. Uses saline and gloves. Best medicine.", costline: "Energy 2 · saline · gloves · fee $280", need: "saline" },
+      { act: "block-wait", title: "Try meds and watch", body: "Tempting if the owner hesitates. Male cats can crash. High risk.", costline: "Energy 1 · reputation gamble" },
+      { act: "block-er", title: "Refer to the city ER", body: "You are a one-table clinic. Sending him on is honest if you are out of stock or energy.", costline: "Energy 1 · lose the fee · +rep if graceful" }
+    ],
+    bloat: [
+      { act: "bloat-or", title: "Stabilize, then surgery", body: "Decompress in-story, fluids mindset, then the operating table. Needs a suture pack.", costline: "Moves to surgery · energy 1 now", amazon: { href: AMAZON.suture, label: "Suture / instrument kits" } },
+      { act: "bloat-delay", title: "Watch one hour", body: "GDV does not wait politely. This is the mistake owners and tired clinics make.", costline: "Energy 1 · dangerous" }
+    ],
+    hbc: [
+      { act: "hbc-aid", title: "Shock care + wound wrap", body: "Warmth, pressure bandage, exam. Uses wrap and kit.", costline: "Energy 2 · wrap · kit · fee $310", need: "wrap", amazon: { href: AMAZON.vetWrap, label: "Vet wrap" } },
+      { act: "hbc-cheap", title: "Wrap the paw and send home", body: "The pad is the obvious injury. The pelvis might not be. Cheaper. Worse medicine.", costline: "Energy 1 · wrap", need: "wrap" }
+    ],
+    heat: [
+      { act: "heat-cool", title: "Active cooling + ward", body: "Tepid water story-path, monitor, overnight kennel if a bed is free.", costline: "Energy 2 · kit · fee $190", need: "kit", amazon: { href: AMAZON.thermo, label: "Pet thermometer" } },
+      { act: "heat-home", title: "Cool and discharge", body: "They want to keep driving. You can allow it if he is brighter — or regret it at 2 a.m.", costline: "Energy 1" }
+    ],
+    foreign: [
+      { act: "fb-surg", title: "Explore on the table", body: "If the sock is stuck, waiting only makes surgery harder.", costline: "To surgery · needs suture", amazon: { href: AMAZON.suture, label: "Suture kits" } },
+      { act: "fb-watch", title: "Supportive care 24h", body: "Some foreign bodies pass. Some do not. Ward him if you have a kennel.", costline: "Energy 1 · fee $90 now" }
+    ],
+    parvo: [
+      { act: "parvo-iso", title: "Isolate and treat", body: "Fluids mindset, disinfection lecture, honest bill. Uses kit and saline.", costline: "Energy 2 · kit · saline · fee $240", need: "kit" },
+      { act: "parvo-out", title: "Outpatient instructions only", body: "The teenager has $40. You can send a syringe-feeding plan and lose sleep.", costline: "Energy 1 · fee $40", amazon: { href: AMAZON.syringe, label: "Feeding syringes" } }
+    ],
+    cannotpay: [
+      { act: "pay-kind", title: "Treat fully, payment plan", body: "Trim, wrap, pain care. You eat some cost. Town remembers.", costline: "Energy 1 · wrap · +rep · $35 now", need: "wrap" },
+      { act: "pay-min", title: "Pressure wrap only", body: "Stops the bleeding. Not pretty. He might chew it off.", costline: "Energy 1 · wrap · $45", need: "wrap" },
+      { act: "pay-refuse", title: "Ask them to come back with cash", body: "Clinics are not banks. It is also a bleeding animal in your lobby.", costline: "Energy 1 · -rep" }
+    ],
+    ear: [
+      { act: "ear-right", title: "Scope, clean, meds", body: "Do it properly. Uses kit. Teach the owner the 10-day rule.", costline: "Energy 1 · kit · fee $120", need: "kit", amazon: { href: AMAZON.otoscope, label: "Vet otoscope" } },
+      { act: "ear-shot", title: "Quick drops and out", body: "Fast money. The ear will be back on Friday.", costline: "Energy 1 · fee $70" }
+    ],
+    dental: [
+      { act: "dent-feed", title: "Pain plan + syringe feeding", body: "Stabilize the gut first. Book a later dental if you can.", costline: "Energy 2 · kit · fee $150", need: "kit", amazon: { href: AMAZON.syringe, label: "Syringe feeding" } },
+      { act: "dent-home", title: "Send hay and hope", body: "Rabbits decline quietly. This is a poor choice dressed as kindness.", costline: "Energy 1 · fee $40" }
+    ],
+    seizure: [
+      { act: "sz-obs", title: "Exam, counsel, observe", body: "Check gums, temp story-path, seizure log for the family.", costline: "Energy 1 · gloves · fee $180", need: "gloves", amazon: { href: AMAZON.stethoscope, label: "Stethoscope" } },
+      { act: "sz-over", title: "Heavy workup they cannot afford", body: "You can be thorough and still lose the client.", costline: "Energy 2 · they decline · -cash time" }
+    ],
+    antibiotics: [
+      { act: "abx-no", title: "Supportive care, no extra antibiotics", body: "Steam, eyes, time. Explain resistance like a human being.", costline: "Energy 1 · fee $85 · +rep with some, -rep with Avery" },
+      { act: "abx-yes", title: "Give the shot they want", body: "Peace in the room. A sloppy habit if it spreads.", costline: "Energy 1 · fee $110 · -rep among staff-you" }
+    ],
+    dystocia: [
+      { act: "dys-or", title: "C-section on the table", body: "If medical help fails in-story, she needs surgery and a collar after.", costline: "To surgery · suture required", amazon: { href: AMAZON.suture, label: "Suture kits" } },
+      { act: "dys-med", title: "Medical management first", body: "Sometimes a kitten comes. Sometimes you waste the hour she had.", costline: "Energy 2 · gamble" }
+    ],
+    senior: [
+      { act: "sr-comfort", title: "Comfort care and a plan", body: "Pain relief, appetite tricks, a quality-of-life scale to take home.", costline: "Energy 1 · fee $70 · +rep", amazon: { href: AMAZON.firstAid, label: "Home care kit" } },
+      { act: "sr-peace", title: "A peaceful goodbye", body: "If June is ready, you stay in the room. Quiet, unhurried, dignified.", costline: "Energy 1 · fee $90 · +rep" },
+      { act: "sr-push", title: "Push aggressive workup", body: "You can chase numbers past the point of kindness.", costline: "Energy 2 · fee $200 · -rep" }
+    ],
+    capacity: [
+      { act: "cap-triage", title: "Take the trauma, delay vaccines", body: "Triage is a skill. Wellness can wait. Explain it without shrinking.", costline: "Energy 1 · +rep" },
+      { act: "cap-all", title: "Squeeze everyone in", body: "Heroics until someone gets a sloppy catheter. Energy crash.", costline: "Energy 3 · mixed results" },
+      { act: "cap-divert", title: "Divert the emergency onward", body: "Unsafe staffing is a real reason to say no. Do it with directions and a phone call.", costline: "Energy 1 · -rep with one family, +ethics" }
+    ]
+  };
+  return map[c.id] || [];
+}
+
+function pay(fee) { STATE.cash += fee; }
+function log(s) { STATE.log.push(s); if (STATE.log.length > 30) STATE.log.shift(); }
+
+function finishExam(c, opts) {
+  const { cash=0, rep=0, energy=1, stock=null, ward=null, lose=false, msg="", toSurgery=null } = opts;
+  STATE.energy -= energy;
+  STATE.cash += cash;
+  STATE.rep += rep;
+  if (stock) stock.forEach(([id,n]) => useStock(id,n));
+  if (lose) { STATE.lost++; log(`${c.pet} did not make it.`); }
+  else if (!toSurgery) { STATE.treated++; }
+  if (ward) {
+    if (STATE.ward.length >= STATE.beds) toast("Ward full — discharged with instructions.");
+    else STATE.ward.push(ward);
+  }
+  if (toSurgery) {
+    STATE.surgery = toSurgery;
+    STATE.exam = null;
+    log(msg);
+    toast(msg);
+    showRoom("surgery");
+    hud();
+    return;
+  }
+  log(msg);
+  toast(msg);
+  STATE.exam = null;
+  hud();
+  showRoom("lobby");
+}
+
+function resolveChoice(c, act) {
+  if (STATE.energy <= 0 && !act.startsWith("cap")) { toast("No energy."); return; }
+  const R = {
+    "block-stab": () => finishExam(c, { cash:280, rep:6, energy:2, stock:[["saline",1],["gloves",1]], ward:{pet:c.pet,emoji:c.emoji,note:"Unblocked, on fluids story-path",need:"overnight watch"}, msg:"Pepper pees a stream in the sink. Ms. Bristol cries in the good way." }),
+    "block-wait": () => finishExam(c, { cash:40, rep:-10, energy:1, lose: Math.random()<0.62, msg: Math.random()<0.62 ? "Pepper decompensates in the carrier. Waiting was the wrong call." : "He limps through the night. You got lucky. Do not repeat this." }),
+    "block-er": () => finishExam(c, { cash:0, rep:3, energy:1, msg:"You call ahead to the city ER. Honesty beats a dead cat on your table." }),
+    "bloat-or": () => finishExam(c, { energy:1, toSurgery: surgeryCase(c, "gdv"), msg:"Hank is clipped and wheeled under the lamp." }),
+    "bloat-delay": () => finishExam(c, { cash:0, rep:-14, energy:1, lose:true, msg:"The stomach torses further. Hank crashes in the lobby. Maple Hollow will talk." }),
+    "hbc-aid": () => finishExam(c, { cash:310, rep:5, energy:2, stock:[["wrap",1],["kit",1]], ward:{pet:c.pet,emoji:c.emoji,note:"Stable, pale but improving",need:"pain watch"}, msg:"Scout's color comes back. The pad is dressed. X-rays are a conversation for morning." }),
+    "hbc-cheap": () => finishExam(c, { cash:80, rep:-4, energy:1, stock:[["wrap",1]], msg:"You send Scout home on three legs of hope. Jamie texts at midnight. He cannot stand." }),
+    "heat-cool": () => finishExam(c, { cash:190, rep:4, energy:2, stock:[["kit",1]], ward:{pet:c.pet,emoji:c.emoji,note:"Cooling, brighter",need:"temp checks"}, msg:"Biscuit stops staggering. The tourists apologize to the dog, then to you." }),
+    "heat-home": () => finishExam(c, { cash:70, rep: Math.random()<0.4?-6:1, energy:1, lose: Math.random()<0.25, msg: Math.random()<0.25 ? "They call from the highway. Biscuit seized. Discharge was too soon." : "Biscuit makes it to their hotel. You still hate cars in August." }),
+    "fb-surg": () => finishExam(c, { energy:1, toSurgery: surgeryCase(c, "fb"), msg:"Noodle is induced. There is a sock-shaped problem in this story." }),
+    "fb-watch": () => finishExam(c, { cash:90, rep:1, energy:1, ward: STATE.ward.length<STATE.beds?{pet:c.pet,emoji:c.emoji,note:"Watching for obstruction",need:"vomit log"}:null, msg:"You wait on the sock. Theo promises no more laundry on the floor." }),
+    "parvo-iso": () => finishExam(c, { cash:240, rep:6, energy:2, stock:[["kit",1],["saline",1]], ward:{pet:c.pet,emoji:c.emoji,note:"Isolation kennel",need:"barrier nursing"}, msg:"Pip is in the back on fluids-in-story. You bleach the lobby yourself." }),
+    "parvo-out": () => finishExam(c, { cash:40, rep:-2, energy:1, msg:"You draw a feeding schedule on scrap paper. The kid nods too fast." }),
+    "pay-kind": () => finishExam(c, { cash:35, rep:8, energy:1, stock:[["wrap",1]], msg:"Mabel's dewclaw is tidy. Mr. Ortiz leaves a jar of honey at the desk tomorrow." }),
+    "pay-min": () => finishExam(c, { cash:45, rep:0, energy:1, stock:[["wrap",1]], msg:"The bleeding stops. It is not your best work. It is what the day allowed." }),
+    "pay-refuse": () => finishExam(c, { cash:0, rep:-8, energy:1, msg:"They leave a trail of drops on the mat. You lock the door and hate the math." }),
+    "ear-right": () => finishExam(c, { cash:120, rep:3, energy:1, stock:[["kit",1]], msg:"Olive's ear is a different color. Priya films your cleaning lecture." }),
+    "ear-shot": () => finishExam(c, { cash:70, rep:-1, energy:1, msg:"Fast in, fast out. You already know this card will return." }),
+    "dent-feed": () => finishExam(c, { cash:150, rep:5, energy:2, stock:[["kit",1]], ward:{pet:c.pet,emoji:"🐰",note:"Syringe fed, gut moving",need:"hay + warmth"}, msg:"Thistle takes a syringe of mash. Elena learns that 'off food' is a siren." }),
+    "dent-home": () => finishExam(c, { cash:40, rep:-7, energy:1, lose: Math.random()<0.35, msg: Math.random()<0.35 ? "Thistle is gone by morning. Gut stasis is not a mood." : "Thistle nibbles at dawn. You do not deserve that luck." }),
+    "sz-obs": () => finishExam(c, { cash:180, rep:4, energy:1, stock:[["gloves",1]], msg:"The Parkers leave with a seizure log and your cell-adjacent after-hours speech." }),
+    "sz-over": () => finishExam(c, { cash:40, rep:-3, energy:2, msg:"They cannot do the gold-standard panel. They feel judged. Cosmo still needs a plan." }),
+    "abx-no": () => finishExam(c, { cash:85, rep:2, energy:1, msg:"Avery is annoyed. Jazz will likely be fine. Your future self thanks you." }),
+    "abx-yes": () => finishExam(c, { cash:110, rep:-3, energy:1, msg:"Avery posts a glowing review. You feel the small leak in your standards." }),
+    "dys-or": () => finishExam(c, { energy:1, toSurgery: surgeryCase(c, "csec"), msg:"Luna is prepped. The barn can wait." }),
+    "dys-med": () => {
+      const ok = Math.random() < 0.45;
+      if (ok) finishExam(c, { cash:160, rep:4, energy:2, msg:"A slick kitten slides into the towel. Sometimes medicine is enough." });
+      else finishExam(c, { energy:2, toSurgery: surgeryCase(c, "csec"), msg:"Nothing budges. You wheel her to the table." });
+    },
+    "sr-comfort": () => finishExam(c, { cash:70, rep:6, energy:1, msg:"June has a checklist of good days. Walter steals a treat on the way out." }),
+    "sr-peace": () => finishExam(c, { cash:90, rep:7, energy:1, msg:"The room stays quiet. You were present. That is the work." }),
+    "sr-push": () => finishExam(c, { cash:200, rep:-6, energy:2, msg:"The estimates stack up. June looks smaller when she leaves." }),
+    "cap-triage": () => finishExam(c, { cash:0, rep:5, energy:1, msg:"Vaccines rebooked. The trauma gets the table. Staff can breathe." }),
+    "cap-all": () => finishExam(c, { cash:90, rep:-2, energy:3, msg:"You see everyone. Charts get sloppy. Energy is gone before supper." }),
+    "cap-divert": () => finishExam(c, { cash:0, rep:1, energy:1, msg:"You call the next town and stay on the line until they are rolling." })
+  };
+  if (R[act]) R[act]();
+}
+
+function surgeryCase(c, type) {
+  const texts = {
+    gdv: "Decompressed. Now the twist. Hands steady.",
+    fb: "Enterotomy energy. Count sponges. Find the sock.",
+    csec: "Linea, kittens, warm towels. Then close like you mean it."
+  };
+  return {
+    pet: c.pet, species: c.species, type, from: c,
+    step: 1, stepText: texts[type],
+    choices: [
+      { act: "sx-go", title: "Proceed carefully", body: "Uses a suture pack. Good lighting, good counting, no hero speed.", costline: "Energy 2 · suture ×1 · best odds", need: "suture", amazon: { href: AMAZON.suture, label: "Suture kits" } },
+      { act: "sx-rush", title: "Rush it — lobby is stacking", body: "You can close faster. Complications like speed.", costline: "Energy 1 · suture ×1 · risky", need: "suture" },
+      { act: "sx-abort", title: "Abort and refer mid-prep", body: "Rarely pretty. Sometimes the honest move if stock or energy fails.", costline: "Energy 1 · -fee · mixed rep" }
+    ]
+  };
+}
+
+function resolveSurgery(act) {
+  const s = STATE.surgery;
+  if (!s) return;
+  if ((act === "sx-go" || act === "sx-rush") && !hasStock("suture")) { toast("No suture pack. Restock pharmacy."); return; }
+  if (act === "sx-abort") {
+    STATE.energy -= 1; STATE.rep -= 2; STATE.surgery = null;
+    log("You stopped short of incision and sent " + s.pet + " on.");
+    toast("Referred mid-prep. Humble, expensive-feeling, alive.");
+    hud(); showRoom("lobby"); return;
+  }
+  useStock("suture", 1);
+  const rush = act === "sx-rush";
+  STATE.energy -= rush ? 1 : 2;
+  const fail = rush ? Math.random() < 0.38 : Math.random() < 0.1;
+  if (fail) {
+    STATE.lost++; STATE.rep -= 12; STATE.surgery = null;
+    log("Surgery on " + s.pet + " went wrong.");
+    toast("The monitor flattens. You walk to the lobby the long way.");
+    hud(); showRoom("office"); return;
+  }
+  const fee = s.type === "gdv" ? 420 : s.type === "csec" ? 360 : 260;
+  STATE.cash += fee; STATE.rep += rush ? 2 : 7; STATE.treated++;
+  if (hasStock("collar")) useStock("collar", 1);
+  if (STATE.ward.length < STATE.beds) {
+    STATE.ward.push({ pet: s.pet, emoji: s.from.emoji, note: "Post-op, quiet kennel", need: "pain + collar" });
+  }
+  log("Clean surgery on " + s.pet + ". Fee $" + fee + ".");
+  toast(s.pet + " is closed and breathing.");
+  STATE.surgery = null;
+  hud(); showRoom("recovery");
+}
+
+function buy(id) {
+  const item = SHOP.find(s => s.id === id);
+  if (STATE.cash < item.cost) { toast("Not enough cash."); return; }
+  STATE.cash -= item.cost;
+  STATE.stock[item.stock] = (STATE.stock[item.stock]||0) + item.qty;
+  log("Restocked " + item.name + ".");
+  toast("Shelves heavier. Cash lighter.");
+  hud(); render.pharmacy();
+}
+
+function endDay() {
+  if (STATE.exam || STATE.surgery) { toast("Finish the patient in exam or surgery first."); return; }
+  let night = "Night is quiet.";
+  STATE.ward.forEach(p => {
+    if (Math.random() < 0.12) { STATE.rep -= 3; night = p.pet + " had a rough night. You still have a clinic."; }
+    else { STATE.rep += 1; }
+  });
+  // leftover lobby unrest
+  const left = STATE.lobby.filter(c => c.tag === "er").length;
+  if (left) { STATE.rep -= left * 4; night = "Emergencies walked out untreated. Word travels."; }
+  STATE.ward = [];
+  STATE.lobby = [];
+  STATE.day += 1;
+  STATE.energy = STATE.energyMax;
+  if (STATE.day % 4 === 0) STATE.energyMax = Math.min(12, STATE.energyMax + 1);
+  if (STATE.rep < 20) {
+    log("Reviews tank. A mobile clinic parks on Main.");
+  }
+  log("Day " + (STATE.day-1) + " closed. " + night);
+  pickCases();
+  hud();
+  showRoom("lobby");
+  toast("Day " + STATE.day + " — doors open.");
+}
+
+function resetGame() {
+  if (!confirm("Start over?")) return;
+  localStorage.removeItem("pawhaven");
+  location.reload();
+}
+
+document.querySelectorAll("nav.rooms button").forEach(b => {
+  b.onclick = () => showRoom(b.dataset.room);
+});
+$("startBtn").onclick = () => {
+  $("start").style.display = "none";
+  pickCases(); hud(); render.lobby();
+};
+$("continueBtn").onclick = () => {
+  $("start").style.display = "none";
+  pickCases(); hud(); render.lobby();
+};
+
+if (load()) $("continueBtn").style.display = "block";
+hud();
+</script>
+</body>
+</html>
